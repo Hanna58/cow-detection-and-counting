@@ -3,6 +3,7 @@ from roboflow import Roboflow
 from PIL import Image
 import io
 import os
+import pandas as pd
 
 # Initialize Roboflow with your API key
 rf = Roboflow(api_key="WHgmsmbdXkhuV1VAw4BK")
@@ -43,8 +44,23 @@ def upload_page():
         num_cows = len(result['predictions'])
         st.write(f"Number of cows detected: {num_cows}")
 
-        # Display the prediction results
-        # st.write(result)
+        # Calculate and display average confidence score
+        if num_cows > 0:
+            confidences = [pred['confidence'] for pred in result['predictions']]
+            avg_confidence = sum(confidences) / num_cows
+            st.write(f"Average confidence score: {avg_confidence:.2f}")
+
+            # Create and display a summary table
+            df = pd.DataFrame(result['predictions'])
+            st.write("Prediction Summary Table:")
+            # Ensure all relevant columns are included
+            columns_to_show = ['class', 'confidence', 'x', 'y', 'width', 'height']
+            # Display only columns that exist in the DataFrame
+            columns_to_show = [col for col in columns_to_show if col in df.columns]
+            summary_df = df[columns_to_show]
+            st.dataframe(summary_df)
+        else:
+            st.write("No cows detected.")
 
         # Clean up temporary file
         os.remove("temp_image.jpg")
