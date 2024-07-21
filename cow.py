@@ -38,11 +38,12 @@ def upload_page():
 
         try:
             # Predict using Roboflow model
-            result = model.predict(temp_image_path, confidence=40, overlap=30).json()
+            prediction = model.predict(temp_image_path, confidence=40, overlap=30)
+            result = prediction.json()
 
             # Visualize and display the prediction
             result_image_path = "prediction.jpg"
-            model.predict(temp_image_path, confidence=40, overlap=30).save(result_image_path)
+            prediction.save(result_image_path)
             st.image(result_image_path, caption='Prediction Result.', use_column_width=True)
 
             # Extract and display the number of detected cows
